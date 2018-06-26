@@ -1,0 +1,14 @@
+[Unit]
+Description=Apache Exporter
+After=network.target
+
+[Service]
+ExecStart={{ apache_exporter_symlink }} \
+            -insecure {{ apache_exporter_insecure }} \
+            -log.level {{ apache_exporter_log_level }} \
+            -scrape_uri {{ apache_exporter_scrape_uri }} \
+            -telemetry.address {{ apache_exporter_telemetry_address }} \
+            -telemetry.endpoint {{ apache_exporter_telemetry_endpoint }}
+
+[Install]
+WantedBy=multi-user.target

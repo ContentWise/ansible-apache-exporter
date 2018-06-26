@@ -1,0 +1,32 @@
+---
+- name: ensure Prometheus exporters directory exist
+  file:
+    path: "{{ apache_exporter_install_dir }}"
+    state: directory
+
+- name: unarchive Apache Exporter
+  unarchive:
+    remote_src: yes
+    dest: "{{ apache_exporter_install_dir }}"
+    src: "{{ apache_exporter_url }}"
+
+- name: create symlink to the current release
+  file:
+    src: "{{ apache_exporter_binary }}"
+    path: "{{ apache_exporter_symlink }}"
+    state: link
+  notify: restart apache exporter
+
+- name: create systemd script
+  template:
+    src: apache_exporter.service.j2
+    dest: /etc/systemd/system/apache-exporter.service
+  notify: restart apache exporter
+
+- meta: flush_handlers
+
+- name: make sure Apache Exporter is started
+  service:
+    name: apache-exporter
+    state: started
+    enabled: yes
